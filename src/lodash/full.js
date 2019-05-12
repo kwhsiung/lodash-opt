@@ -1,4 +1,4 @@
 import _ from 'lodash'
-const mapped = _.map([1, 2, 3], i => i + 1)
+const result = _.sortBy(_.flatten(_.map([1, 2, 3], x => [x, x * 2])), x => x)
 
-console.log(mapped)
+console.log(result)

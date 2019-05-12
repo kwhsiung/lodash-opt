@@ -8,14 +8,14 @@ function build (jsPath) {
   webpack(getConfig(jsPath), (err, stats) => { // Stats Object
     if (err || stats.hasErrors()) {
       // Handle errors here
-      console.log(stats.toString({ colors: true}))
+      console.log(stats.toString({ colors: true }))
     }
     // Done processing
     console.log('==================================')
     console.log(`Starting build ${jsPath}`)
-    console.log(stats.toString({ colors: true}))
+    console.log(stats.toString({ colors: true }))
     console.log('==================================')
-  });
+  })
 }
 
 function traverseDir (dir) {

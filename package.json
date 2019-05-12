@@ -4,7 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "node webpack.build.js"
+    "build": "node webpack.build.js",
+    "lint": "eslint --ext .js --ignore-path .gitignore .",
+    "lintfix": "eslint --ext .js --ignore-path .gitignore . --fix"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint"
+    ]
   },
   "repository": {
     "type": "git",
@@ -21,7 +33,15 @@
     "babel-loader": "^8.0.5",
     "babel-plugin-lodash": "^3.3.4",
     "clean-webpack-plugin": "^2.0.2",
+    "eslint": "^5.16.0",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.17.2",
+    "eslint-plugin-node": "^9.0.1",
+    "eslint-plugin-promise": "^4.1.1",
+    "eslint-plugin-standard": "^4.0.0",
     "html-webpack-plugin": "^3.2.0",
+    "husky": "^2.2.0",
+    "lint-staged": "^8.1.6",
     "lodash-webpack-plugin": "^0.11.5",
     "webpack": "^4.31.0",
     "webpack-bundle-analyzer": "^3.3.2",

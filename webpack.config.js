@@ -2,7 +2,7 @@ const path = require('path')
 // const appDir = path.dirname(require.main.filename)
 // const relativePath = path.relative(appDir, __dirname)
 
-const merge = require('webpack-merge')
+// const merge = require('webpack-merge')
 
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const HtmlWebpackPlugin = require('html-webpack-plugin')
