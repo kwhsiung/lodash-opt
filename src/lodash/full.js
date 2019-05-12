@@ -1,0 +1,4 @@
+import _ from 'lodash'
+const mapped = _.map([1, 2, 3], i => i + 1)
+
+console.log(mapped)
