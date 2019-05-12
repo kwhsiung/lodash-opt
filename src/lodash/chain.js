@@ -6,5 +6,4 @@ const result =
     .flatten()
     .sort()
     .value()
-
 console.log(result)
