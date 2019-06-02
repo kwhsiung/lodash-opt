@@ -51,7 +51,7 @@ const generatePlugins = path => {
   ]
 }
 
-module.exports = function (entryPath) {
+module.exports = entryPath => {
   debug(`Start generate configs of: ${entryPath}`)
 
   const configs = [

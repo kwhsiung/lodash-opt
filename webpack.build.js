@@ -5,16 +5,16 @@ const generateConfigsWithPath = require('./webpack.config')
 const chalk = require('chalk')
 const debug = require('debug')('lodash-opt:webpack.build.js')
 
-function build (jsPath) {
-  console.log(`Starting build ${jsPath} with four different webpack configs`)
+const build = entryPath => {
+  console.log(`Starting build ${entryPath} with four different webpack configs`)
 
   webpack(
-    generateConfigsWithPath(jsPath),
+    generateConfigsWithPath(entryPath),
     (err, stats) => { // Stats Object
       if (err || stats.hasErrors()) {
         // Handle errors here
         console.log(chalk.bgRed.white.bold('=================================='))
-        console.log(chalk.bgRed.white.bold(`Build fail for the path: ${jsPath}`))
+        console.log(chalk.bgRed.white.bold(`Build fail for the path: ${entryPath}`))
         console.log('\n')
         console.error(stats.toString({ colors: true }))
         console.log('\n')
@@ -23,7 +23,7 @@ function build (jsPath) {
       }
       // Done processing
       console.log(chalk.bgGreen.white.bold('=================================='))
-      console.log(chalk.bgGreen.white.bold(`Build Done for the path: ${jsPath}`))
+      console.log(chalk.bgGreen.white.bold(`Build Done for the path: ${entryPath}`))
       console.log('\n')
       console.log(stats.toString({ colors: true }))
       console.log('\n')
@@ -31,11 +31,9 @@ function build (jsPath) {
       console.log('\n')
     }
   )
-
-  // generateConfigsWithPath(jsPath)
 }
 
-function traverseDir (dir) {
+const traverseDir = dir => {
   debug('Start traverse dir:', dir)
   fs.readdirSync(dir).forEach(file => {
     const fullPath = path.join(dir, file)

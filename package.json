@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "node webpack.build.js",
-    "debugbuild": "DEBUG=lodash-opt:* npm run build",
+    "builddebug": "DEBUG=lodash-opt:* npm run build",
     "lint": "eslint --ext .js --ignore-path .gitignore .",
     "lintfix": "eslint --ext .js --ignore-path .gitignore . --fix"
   },
