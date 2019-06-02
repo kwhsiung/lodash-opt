@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "node webpack.build.js",
+    "debugbuild": "DEBUG=lodash-opt:* npm run build",
     "lint": "eslint --ext .js --ignore-path .gitignore .",
     "lintfix": "eslint --ext .js --ignore-path .gitignore . --fix"
   },
@@ -32,7 +33,9 @@
     "@babel/preset-env": "^7.4.4",
     "babel-loader": "^8.0.5",
     "babel-plugin-lodash": "^3.3.4",
+    "chalk": "^2.4.2",
     "clean-webpack-plugin": "^2.0.2",
+    "debug": "^4.1.1",
     "eslint": "^5.16.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.17.2",

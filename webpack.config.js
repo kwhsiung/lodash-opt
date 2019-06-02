@@ -1,166 +1,90 @@
 const path = require('path')
-// const appDir = path.dirname(require.main.filename)
-// const relativePath = path.relative(appDir, __dirname)
-
-// const merge = require('webpack-merge')
-
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin')
+const debug = require('debug')('lodash-opt:webpack.config.js')
 
-module.exports = function (jsPath) {
-  const fileName = path.basename(jsPath, '.js')
-  const lodashPackageName = path.dirname(jsPath)
+const mode = 'production'
+const generateEntry = entryPath => path.resolve(__dirname, entryPath)
+const generateOutput = (entryPath, pluginName) => {
+  const fileName = path.basename(entryPath, '.js')
+  const lodashPackageName = path.dirname(entryPath)
 
-  const configPluginNone = {
-    name: 'plugin-none',
-    mode: 'production',
-    entry: path.resolve(__dirname, jsPath),
-    output: {
-      filename: '[name].bundle.js',
-      path: path.resolve(__dirname, `dist/${lodashPackageName}/${fileName}/plugin-none`)
-    },
-    module: {
-      rules: [
-        {
-          test: /\.js$/,
-          exclude: /node_modules/,
-          loader: 'babel-loader'
-        }
-      ]
-    },
-    optimization: {
-      splitChunks: {
-        chunks: 'all'
-      }
-    },
-    plugins: [
-      new BundleAnalyzerPlugin({
-        analyzerMode: 'static',
-        openAnalyzer: false
-      }),
-      new CleanWebpackPlugin(),
-      new HtmlWebpackPlugin({
-        title: 'Output Management'
-      })
-    ]
+  return {
+    filename: '[name].bundle.js',
+    path: path.resolve(__dirname, `dist/${lodashPackageName}/${fileName}/${pluginName}`)
   }
-
-  const configPluginBabel = {
-    name: 'plugin-babel',
-    mode: 'production',
-    entry: path.resolve(__dirname, jsPath),
-    output: {
-      filename: '[name].bundle.js',
-      path: path.resolve(__dirname, `dist/${lodashPackageName}/${fileName}/plugin-babel`)
-    },
-    module: {
-      rules: [
-        {
-          test: /\.js$/,
-          exclude: /node_modules/,
-          loader: 'babel-loader',
-          options: {
-            plugins: ['lodash']
-          }
-        }
-      ]
-    },
-    optimization: {
-      splitChunks: {
-        chunks: 'all'
-      }
-    },
-    plugins: [
-      new BundleAnalyzerPlugin({
-        analyzerMode: 'static',
-        openAnalyzer: false
-      }),
-      new CleanWebpackPlugin(),
-      new HtmlWebpackPlugin({
-        title: 'Output Management'
-      })
-    ]
+}
+const babelLoaderConfig = {
+  test: /\.js$/,
+  exclude: /node_modules/,
+  use: {
+    loader: 'babel-loader'
   }
-
-  const configPluginWebpack = {
-    name: 'plugin-webpack',
-    mode: 'production',
-    entry: path.resolve(__dirname, jsPath),
-    output: {
-      filename: '[name].bundle.js',
-      path: path.resolve(__dirname, `dist/${lodashPackageName}/${fileName}/plugin-webpack`)
-    },
-    module: {
-      rules: [
-        {
-          test: /\.js$/,
-          exclude: /node_modules/,
-          loader: 'babel-loader'
-        }
-      ]
-    },
-    optimization: {
-      splitChunks: {
-        chunks: 'all'
-      }
-    },
-    plugins: [
-      new LodashModuleReplacementPlugin(),
-      new BundleAnalyzerPlugin({
-        analyzerMode: 'static',
-        openAnalyzer: false
-      }),
-      new CleanWebpackPlugin(),
-      new HtmlWebpackPlugin({
-        title: 'Output Management'
-      })
-    ]
+}
+const babelLoaderConfigLodash = Object.assign({}, babelLoaderConfig, {
+  use: {
+    loader: 'babel-loader',
+    options: {
+      plugins: [ 'lodash' ]
+    }
   }
-
-  const configPluginBoth = {
-    name: 'plugin-both',
-    mode: 'production',
-    entry: path.resolve(__dirname, jsPath),
-    output: {
-      filename: '[name].bundle.js',
-      path: path.resolve(__dirname, `dist/${lodashPackageName}/${fileName}/plugin-both`)
-    },
-    module: {
-      rules: [
-        {
-          test: /\.js$/,
-          exclude: /node_modules/,
-          loader: 'babel-loader',
-          options: {
-            plugins: ['lodash']
-          }
-        }
-      ]
-    },
-    optimization: {
-      splitChunks: {
-        chunks: 'all'
-      }
-    },
-    plugins: [
-      new LodashModuleReplacementPlugin(),
-      new BundleAnalyzerPlugin({
-        analyzerMode: 'static',
-        openAnalyzer: false
-      }),
-      new CleanWebpackPlugin(),
-      new HtmlWebpackPlugin({
-        title: 'Output Management'
-      })
-    ]
+})
+const optimization = {
+  splitChunks: {
+    chunks: 'all'
   }
-
+}
+const generatePlugins = path => {
+  debug(path)
   return [
-    configPluginNone,
-    configPluginBabel,
-    configPluginWebpack,
-    configPluginBoth
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+      reportFilename: `${path}/report.html`,
+      openAnalyzer: false
+    }),
+    new CleanWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      title: 'Output Management'
+    })
   ]
+}
+
+module.exports = function (entryPath) {
+  debug(`Start generate configs of: ${entryPath}`)
+
+  const configs = [
+    'plugin-none',
+    'plugin-babel',
+    'plugin-webpack',
+    'plugin-both'
+  ].map(pluginName => {
+    const entry = generateEntry(entryPath)
+    const output = generateOutput(entryPath, pluginName)
+    const babelConfig =
+      pluginName === 'plugin-babel' || pluginName === 'plugin-both'
+        ? babelLoaderConfigLodash
+        : babelLoaderConfig
+    const plugins =
+      pluginName === 'plugin-webpack' || pluginName === 'plugin-both'
+        ? generatePlugins(output.path).concat([ new LodashModuleReplacementPlugin() ])
+        : generatePlugins(output.path)
+
+    return {
+      name: pluginName,
+      mode,
+      entry,
+      output,
+      module: {
+        rules: [
+          babelConfig
+        ]
+      },
+      optimization,
+      plugins
+    }
+  })
+
+  return configs
 }
